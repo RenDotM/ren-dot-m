@@ -6,46 +6,18 @@ const port = process.argv.slice(2)[0];
 const app = express();
 app.use(bodyParser.json());
 
-const powers = [
-  { id: 1, name: 'flying' },
-  { id: 2, name: 'teleporting' },
-  { id: 3, name: 'super strength' },
-  { id: 4, name: 'clairvoyance'},
-  { id: 5, name: 'mind reading' }
-];
-
-const heroes = [
+const users = [
   {
-      id: 1,
-      type: 'spider-dog',
-      displayName: 'Cooper',
-      powers: [1, 4],
-      img: 'cooper.jpg',
-      busy: false
+      user_id: 1,
+      username: 'ck43789@gmail.com',
+      password: 'abc123,
+      tenants: [1, 2, 3]
   },
   {
-      id: 2,
-      type: 'flying-dogs',
-      displayName: 'Jack & Buddy',
-      powers: [2, 5],
-      img: 'jack_buddy.jpg',
-      busy: false
-  },
-  {
-      id: 3,
-      type: 'dark-light-side',
-      displayName: 'Max & Charlie',
-      powers: [3, 2],
-      img: 'max_charlie.jpg',
-      busy: false
-  },
-  {
-      id: 4,
-      type: 'captain-dog',
-      displayName: 'Rocky',
-      powers: [1, 5],
-      img: 'rocky.jpg',
-      busy: false
+      user_id: 2,
+      username: 'ppui2567@gmail.com',
+      password: 'abc123,
+      tenants: [1, 2, 3]
   }
 ];
 
