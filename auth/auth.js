@@ -6,78 +6,84 @@ const port = process.argv.slice(2)[0];
 const app = express();
 app.use(bodyParser.json());
 
-const powers = [
-  { id: 1, name: 'flying' },
-  { id: 2, name: 'teleporting' },
-  { id: 3, name: 'super strength' },
-  { id: 4, name: 'clairvoyance'},
-  { id: 5, name: 'mind reading' }
-];
-
-const heroes = [
+let users = [
   {
-      id: 1,
-      type: 'spider-dog',
-      displayName: 'Cooper',
-      powers: [1, 4],
-      img: 'cooper.jpg',
-      busy: false
+      user_id: '1',
+      username: 'ck43789@gmail.com',
+      password: 'abc123',
+      tenants: [1, 2, 3]
   },
   {
-      id: 2,
-      type: 'flying-dogs',
-      displayName: 'Jack & Buddy',
-      powers: [2, 5],
-      img: 'jack_buddy.jpg',
-      busy: false
-  },
-  {
-      id: 3,
-      type: 'dark-light-side',
-      displayName: 'Max & Charlie',
-      powers: [3, 2],
-      img: 'max_charlie.jpg',
-      busy: false
-  },
-  {
-      id: 4,
-      type: 'captain-dog',
-      displayName: 'Rocky',
-      powers: [1, 5],
-      img: 'rocky.jpg',
-      busy: false
+      user_id: '2',
+      username: 'ppui2567@gmail.com',
+      password: 'abc456',
+      tenants: [1, 2, 3]
   }
 ];
 
-app.get('/heroes', (req, res) => {
-  console.log('Returning heroes list');
-  res.send(heroes);
+app.post("/users", (req, res) => {
+   const user = req.body;
+   console.log('Adding new item: ', user);
+
+   // add new item to array
+   users.push(user)
+
+   // return updated list
+   res.send(users);
 });
 
-app.get('/powers', (req, res) => {
-  console.log('Returning powers list');
-  res.send(powers);
+app.get('/users', (req, res) => {
+  console.log('Returning users list');
+  res.send(users);
 });
 
-app.post('/hero/**', (req, res) => {
-  const heroId = parseInt(req.params[0]);
-  const foundHero = heroes.find(subject => subject.id === heroId);
+app.get("/users/:id", (req, res) => {
+   const userId = req.params.id;
+   const user = users.find(_user => _user.user_id === userId);
 
-  if (foundHero) {
-      for (let attribute in foundHero) {
-          if (req.body[attribute]) {
-              foundHero[attribute] = req.body[attribute];
-              console.log(`Set ${attribute} to ${req.body[attribute]} in hero: ${heroId}`);
-          }
+   if (user) {
+      res.json(user);
+   } else {
+      res.json({ message: `user ${userId} doesn't exist`})
+   }
+});
+
+// update an item
+app.put("/users/:id", (req, res) => {
+   const itemId = req.params.id;
+   const item = req.body;
+
+   console.log(itemId)
+
+   console.log(item)
+
+   const updatedListItems = [];
+   // loop through list to find and replace one item
+   users.forEach(oldItem => {
+      if (oldItem.user_id === itemId) {
+         updatedListItems.push(item);
+      } else {
+         updatedListItems.push(oldItem);
       }
-      res.status(202).header({Location: `http://localhost:${port}/hero/${foundHero.id}`}).send(foundHero);
-  } else {
-      console.log(`Hero not found.`);
-      res.status(404).send();
-  }
+   });
+
+   // replace old list with new one
+   users = updatedListItems;
+
+   res.send(users);
 });
 
-app.use('/img', express.static(path.join(__dirname,'img')));
+app.delete("/users/:id", (req, res) => {
+   const userId = req.params.id;
 
-console.log(`Heroes service listening on port ${port}`);
+   console.log("Delete item with id: ", userId);
+
+   // filter list copy, by excluding item to delete
+   const filtered_list = users.filter(user => user.user_id !== userId);
+
+   users = filtered_list;
+
+   res.send(users);
+});
+
 app.listen(port);
