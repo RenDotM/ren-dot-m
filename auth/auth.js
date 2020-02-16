@@ -2,9 +2,12 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 
-const port = process.argv.slice(2)[0];
 const app = express();
 app.use(bodyParser.json());
+
+const config = require('config');
+
+let appPort = config.get('app.port');
 
 let users = [
   {
@@ -86,4 +89,6 @@ app.delete("/users/:id", (req, res) => {
    res.send(users);
 });
 
-app.listen(port);
+console.log(`User service listening on port ${appPort}`);
+
+app.listen(appPort);
