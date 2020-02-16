@@ -1,48 +1,33 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const DatabaseFactory = require('./db/DatbaseConnection');
 
 const app = express();
 app.use(bodyParser.json());
 
 const config = require('config');
-
 let appPort = config.get('app.port');
+let dpType = config.get('db.type');
 
-let users = [
-  {
-      user_id: '1',
-      username: 'ck43789@gmail.com',
-      password: 'abc123',
-      tenants: [1, 2, 3]
-  },
-  {
-      user_id: '2',
-      username: 'ppui2567@gmail.com',
-      password: 'abc456',
-      tenants: [1, 2, 3]
-  }
-];
+const db = DatabaseFactory.createDB(dpType);
 
 app.post("/users", (req, res) => {
    const user = req.body;
    console.log('Adding new item: ', user);
 
-   // add new item to array
-   users.push(user)
-
-   // return updated list
-   res.send(users);
+   res.send(db.createUser(user));
 });
 
 app.get('/users', (req, res) => {
   console.log('Returning users list');
-  res.send(users);
+
+  res.send(db.getUsers());
 });
 
 app.get("/users/:id", (req, res) => {
    const userId = req.params.id;
-   const user = users.find(_user => _user.user_id === userId);
+   const user = db.getUserById(userId)
 
    if (user) {
       res.json(user);
@@ -51,29 +36,11 @@ app.get("/users/:id", (req, res) => {
    }
 });
 
-// update an item
 app.put("/users/:id", (req, res) => {
-   const itemId = req.params.id;
-   const item = req.body;
+   const userId = req.params.id;
+   const content = req.body;
 
-   console.log(itemId)
-
-   console.log(item)
-
-   const updatedListItems = [];
-   // loop through list to find and replace one item
-   users.forEach(oldItem => {
-      if (oldItem.user_id === itemId) {
-         updatedListItems.push(item);
-      } else {
-         updatedListItems.push(oldItem);
-      }
-   });
-
-   // replace old list with new one
-   users = updatedListItems;
-
-   res.send(users);
+   res.send(db.updateUserById(userId, content));
 });
 
 app.delete("/users/:id", (req, res) => {
@@ -81,12 +48,7 @@ app.delete("/users/:id", (req, res) => {
 
    console.log("Delete item with id: ", userId);
 
-   // filter list copy, by excluding item to delete
-   const filtered_list = users.filter(user => user.user_id !== userId);
-
-   users = filtered_list;
-
-   res.send(users);
+   res.send(db.deleteUserById(userId));
 });
 
 console.log(`User service listening on port ${appPort}`);

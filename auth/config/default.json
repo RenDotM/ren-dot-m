@@ -1,10 +1,11 @@
 {
   "app": {
-    "port": 3000
+    "port": 8081
   },
   "db": {
+    "type": "memory",
     "host": "localhost",
-    "port": 27017,
-    "name": "ydb"
+    "port": 23424,
+    "name": "ydb",
   }
 }
