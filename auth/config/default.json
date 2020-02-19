@@ -6,6 +6,6 @@
     "type": "memory",
     "host": "localhost",
     "port": 23424,
-    "name": "ydb",
+    "name": "ydb"
   }
 }

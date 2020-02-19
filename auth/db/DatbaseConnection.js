@@ -54,6 +54,7 @@ class MemoryDatabase extends Database{
     }
 
     getUsers() {
+        console.log('getUsers: ', this.users);
         return this.users
     }
 
