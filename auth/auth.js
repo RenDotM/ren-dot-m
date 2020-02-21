@@ -15,12 +15,12 @@ console.log('config,appPort,dpType: ', config,appPort,dpType);
 const db = DatabaseFactory.createDB(dpType);
 
 app.post("/users", (req, res) => {
-   console.log('post("/users" req: ', req);
-   console.log('post("/users" res: ', res);
-   const user = req.body;
-   console.log('Adding new item: ', user);
-
-   res.send(db.createUser(user));
+  console.log('post("/users" req.body: ', req.body);
+  const user = req.body;
+  jwt.sign({user}, 'secretkey', (err,access_token) => {
+    res.json({user: db.createUser(user), access_token})
+    console.log('Adding new item: ', user);
+  });
 });
 
 app.get('/users', (req, res) => {
@@ -59,9 +59,9 @@ app.delete("/users/:id", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-   console.log('post("/users" req: ', req);
-   jwt.sign({user:req.body}, 'secretkey', (err,token) => {
-      res.json({token})
+   console.log('post("/users" req.body: ', req.body);
+   jwt.sign({user:req.body}, 'secretkey', (err,access_token) => {
+      res.json({access_token})
    });
 });
 app.post('/api/posts', verifyToken, (req, res) => {  
