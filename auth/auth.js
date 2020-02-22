@@ -23,10 +23,10 @@ app.post("/users", (req, res) => {
   });
 });
 
-app.get('/users', (req, res) => {
-  console.log('Returning users list');
-  res.send(db.getUsers());
-});
+// app.get('/users', (req, res) => {
+//   console.log('Returning users list');
+//   res.send(db.getUsers());
+// });
 
 app.get("/users/:id", (req, res) => {
    const userId = req.params.id;
@@ -60,38 +60,33 @@ app.delete("/users/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
    console.log('post("/users" req.body: ', req.body);
-   jwt.sign({user:req.body}, 'secretkey', (err,access_token) => {
+   jwt.sign({user:req.body}, 'secretkey' , { expiresIn: '50m' }, (err,access_token) => {
       res.json({access_token})
    });
 });
-app.post('/api/posts', verifyToken, (req, res) => {  
+
+app.get('/users', verifyToken, (req, res) => { 
    jwt.verify(req.token, 'secretkey', (err, authData) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
      if(err) {
        res.sendStatus(403);
      } else {
-       res.json({
-         message: 'Post created...',
-         authData
-       });
+      res.send(db.getUsers());
      }
    });
  });
 
 function verifyToken(req, res, next) {
-  // Get auth header value
+  console.log('verifyToken: ', req.headers);
   const bearerHeader = req.headers['authorization'];
-  // Check if bearer is undefined
+  console.log('verifyToken: ', bearerHeader);
   if(typeof bearerHeader !== 'undefined') {
-    // Split at the space
     const bearer = bearerHeader.split(' ');
-    // Get token from array
     const bearerToken = bearer[1];
-    // Set the token
     req.token = bearerToken;
-    // Next middleware
     next();
   } else {
-    // Forbidden
     res.sendStatus(403);
   }
 
